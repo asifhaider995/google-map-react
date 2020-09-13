@@ -10,19 +10,34 @@ const useStyles = makeStyles((theme) => ({
   infoWindow: {
     width: '20rem',
     height: '100%',
-    padding: '1rem .5rem 1rem 1rem'
+    padding: '.5rem .25rem .5rem .5rem',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+      padding: '.25rem .125rem .25rem .25rem',
+    }
   },
   typoName: {
     textAlign: 'left',
     margin: '1rem 0',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '14px'
+    }
   },
   typoLatLng: {
-    textAlign: 'left',
-    margin: '1rem 0'
+    textAlign: 'justify',
+    margin: '1rem 0',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '12px'
+    }
   },
   btn: {
-    marginTop: '.5rem'
+    marginTop: '.5rem',
+    [theme.breakpoints.down('sm')]: {
+      marginTop: '.25rem',
+      width: '80%',
+      marginLeft: '1rem'
+    }
   }
 
 }))
@@ -43,6 +58,7 @@ function Map(props) {
     let latFloat = parseFloat(latString.slice(1,latString.length));
     let lngFloat = parseFloat(lngString.slice(0,lngString.length-1));
     setLatLng({lat: latFloat, lng: lngFloat})
+    handleInfoClose();
 
   }
   const handleMarkerClick = (event) => {
@@ -57,6 +73,11 @@ function Map(props) {
     setInfoWindow(null)
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Latitude: ", latLng.lat, "Longitude: ", latLng.lng);
+  }
+
   const classes = useStyles();
   return (
     <GoogleMap onClick={handleMapClick} defaultZoom={10} defaultCenter={{lat: 23.780622, lng: 90.425636}}>
@@ -65,18 +86,21 @@ function Map(props) {
         position={latLng}
       />
       {infoWindow && (
-        <InfoWindow position={infoWindow} onCloseClick={handleInfoClose}>
+        <InfoWindow defaultZIndex={1000} position={infoWindow} onCloseClick={handleInfoClose}>
           <Grid className={classes.infoWindow}>
             <Typography className={classes.typoName}>Name: Asif Haider Khan</Typography>
-            <Typography className={classes.typoLatLng}>Latitude: {latLng.lat}</Typography>
-            <Typography className={classes.typoLatLng}>Longitude: {latLng.lng}</Typography>
-            <Button
-              onClick={()=>{console.log("Latitude: ", latLng.lat, "Longitude: ", latLng.lng);}}
+            <form className={classes.mapForm} onSubmit={handleSubmit}>
+              <Typography className={classes.typoLatLng}>Your current location is - </Typography>
+              <Typography className={classes.typoLatLng}>Latitude: <strong>{latLng.lat}</strong></Typography>
+              <Typography className={classes.typoLatLng}>Longitude: <strong>{latLng.lng}</strong></Typography>
+              <Button
+              type='submit'
               variant="contained"
               color="primary"
               fullWidth
               className={classes.btn}
-            > Send Data </Button>
+              > Send Data </Button>
+            </form>
           </Grid>
         </InfoWindow>
       )}
