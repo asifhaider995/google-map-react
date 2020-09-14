@@ -1,6 +1,7 @@
 import React from 'react';
-import {GoogleMap, withScriptjs, withGoogleMap, InfoWindow, Marker } from 'react-google-maps';
-import {Grid, Typography, Button, makeStyles} from '@material-ui/core';
+import {withScriptjs, withGoogleMap} from 'react-google-maps';
+import {Grid, makeStyles} from '@material-ui/core';
+import Map from './components/Map';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,69 +45,6 @@ const useStyles = makeStyles((theme) => ({
 const KEY = process.env.REACT_APP_API_KEY;
 // const myLatLng = {lat: parseFloat(23.784330), lng: parseFloat(90.435754)}
 
-function Map(props) {
-  const [latLng, setLatLng] = React.useState({});
-  const [infoWindow, setInfoWindow] = React.useState(null);
-
-  React.useEffect(()=>{
-    setLatLng(props.currentLocation);
-  },[props.currentLocation])
-
-  const handleMapClick = (event) => {
-    let latString = event.latLng.toString().split(", ")[0];
-    let lngString = event.latLng.toString().split(", ")[1];
-    let latFloat = parseFloat(latString.slice(1,latString.length));
-    let lngFloat = parseFloat(lngString.slice(0,lngString.length-1));
-    setLatLng({lat: latFloat, lng: lngFloat})
-    handleInfoClose();
-
-  }
-  const handleMarkerClick = (event) => {
-    let latString = event.latLng.toString().split(", ")[0];
-    let lngString = event.latLng.toString().split(", ")[1];
-    let latFloat = parseFloat(latString.slice(1,latString.length));
-    let lngFloat = parseFloat(lngString.slice(0,lngString.length-1));
-    setInfoWindow({lat: latFloat, lng: lngFloat})
-  }
-
-  const handleInfoClose = (e) => {
-    setInfoWindow(null)
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Latitude: ", latLng.lat, "Longitude: ", latLng.lng);
-  }
-
-  const classes = useStyles();
-  return (
-    <GoogleMap onClick={handleMapClick} defaultZoom={10} defaultCenter={{lat: 23.780622, lng: 90.425636}}>
-      <Marker
-        onClick={handleMarkerClick}
-        position={latLng}
-      />
-      {infoWindow && (
-        <InfoWindow defaultZIndex={1000} position={infoWindow} onCloseClick={handleInfoClose}>
-          <Grid className={classes.infoWindow}>
-            <Typography className={classes.typoName}>Name: Asif Haider Khan</Typography>
-            <form className={classes.mapForm} onSubmit={handleSubmit}>
-              <Typography className={classes.typoLatLng}>Your current location is - </Typography>
-              <Typography className={classes.typoLatLng}>Latitude: <strong>{latLng.lat}</strong></Typography>
-              <Typography className={classes.typoLatLng}>Longitude: <strong>{latLng.lng}</strong></Typography>
-              <Button
-              type='submit'
-              variant="contained"
-              color="primary"
-              fullWidth
-              className={classes.btn}
-              > Send Data </Button>
-            </form>
-          </Grid>
-        </InfoWindow>
-      )}
-    </GoogleMap>
-  )
-}
 
 const WrappedMap = withScriptjs(withGoogleMap(Map));
 
